@@ -1,15 +1,13 @@
-# Accelrate backend 
+# Accelrate Frontend
 
 ## Quick Start
 
-### 1. Configure environment
-
 To keep your secret key safety, you should not push any environment files into repo.
 
-Create `.env.local` file in `backend/` and add these keys:
+Create `.env.local` file in `frontend/` and add these keys:
 
 ```
-HONO_CORS_ORIGIN="http://localhost:5173/"
+VITE_API_URL="http://localhost:3000/"
 ```
 
 ### 2. Install dependencies
