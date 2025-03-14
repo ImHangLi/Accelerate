@@ -1,2 +1,9 @@
 # deps
 node_modules/
+
+# env
+.env
+.env.*
+
+# others
+bun.lockb
