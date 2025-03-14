@@ -1,0 +1,242 @@
+swagger: "2.0"
+info:
+  title: "Accelerate API"
+  description: |
+    # Accelerate API Documentation
+
+    A text-based group chat environment where users interact with a panel of AI agents 
+    (CEO, CTO, CMO, CFO, COO, etc.) that provide expert feedback on startup ideas.
+
+    ## Overview
+    This API enables:
+    - Submitting startup ideas for AI agent feedback
+    - Simple, stateless interactions for rapid development
+  version: "1.0.0"
+
+# Base path for all endpoints
+basePath: "/api"
+# Supported protocols
+schemes:
+  - "http"
+# Supported content types
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+# API tags for logical grouping
+tags:
+  - name: "Chat"
+    description: "Chat operations for interacting with AI agents"
+  - name: "System"
+    description: "System-level operations"
+
+# Reusable response definitions
+responses:
+  ServerError:
+    description: "Internal server error"
+    schema:
+      $ref: "#/definitions/ErrorResponse"
+    examples:
+      application/json:
+        error: "An unexpected error occurred"
+        code: "SERVER_ERROR"
+        timestamp: "2025-03-14T15:00:00Z"
+
+  BadRequestError:
+    description: "Bad request - Missing or invalid fields"
+    schema:
+      $ref: "#/definitions/ErrorResponse"
+    examples:
+      application/json:
+        error: "Invalid request parameters"
+        code: "INVALID_REQUEST"
+        timestamp: "2025-03-14T15:00:00Z"
+
+# API paths
+paths:
+  #-----------------------------------------------------------------------------
+  # Chat Interaction Endpoints
+  #-----------------------------------------------------------------------------
+  "/chat":
+    post:
+      tags:
+        - "Chat"
+      summary: "Submit chat message and receive AI agent responses"
+      description: |
+        Receives a user's startup idea as a chat message and processes it to determine 
+        which AI agents should respond based on the message content.
+
+        ## Special Commands
+        - **@channel**: Forces all agents to respond to the message
+        - **@[agent]**: Directs the message to a specific agent (e.g., @CEO, @CTO)
+
+        ## Response Behavior
+        - By default, only relevant agents will respond based on message content
+        - With @channel, all agents will provide feedback
+        - With @[agent], only the specified agent will respond
+      operationId: "submitChatMessage"
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/ChatRequest"
+      responses:
+        200:
+          description: "Successful response with agent feedback"
+          schema:
+            $ref: "#/definitions/ChatResponse"
+          examples:
+            application/json:
+              responses:
+                - id: "resp_123456"
+                  agent: "CEO"
+                  message: "Your idea is visionary; focus on long-term scalability and strategic partnerships."
+                  timestamp: "2025-03-14T15:00:02Z"
+                - id: "resp_123457"
+                  agent: "CTO"
+                  message: "Technically, the solution is feasible using a serverless architecture."
+                  timestamp: "2025-03-14T15:00:03Z"
+              timestamp: "2025-03-14T15:00:05Z"
+        400:
+          description: "Bad request - Missing or invalid fields"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+          examples:
+            missingField:
+              error: "Missing required field: message"
+              code: "INVALID_REQUEST"
+              timestamp: "2025-03-14T15:00:00Z"
+        500:
+          $ref: "#/responses/ServerError"
+
+  #-----------------------------------------------------------------------------
+  # System Endpoints
+  #-----------------------------------------------------------------------------
+  "/system/health":
+    get:
+      tags:
+        - "System"
+      summary: "Check system health"
+      description: "Returns the health status of the API and its dependencies"
+      operationId: "getSystemHealth"
+      responses:
+        200:
+          description: "System health information"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                enum: ["healthy", "degraded", "unhealthy"]
+                example: "healthy"
+              version:
+                type: "string"
+                example: "1.0.0"
+              timestamp:
+                type: "string"
+                format: "date-time"
+                example: "2025-03-14T15:00:00Z"
+        500:
+          $ref: "#/responses/ServerError"
+
+# Data models
+definitions:
+  #-----------------------------------------------------------------------------
+  # Primitive Types
+  #-----------------------------------------------------------------------------
+  Timestamp:
+    type: "string"
+    format: "date-time"
+    description: "ISO8601 formatted timestamp"
+    example: "2025-03-14T15:00:00Z"
+
+  Message:
+    type: "string"
+    description: "Text content of a message"
+    minLength: 1
+    maxLength: 2000
+    example: "I'm planning a startup that leverages AI to streamline supply chain management."
+
+  AgentRole:
+    type: "string"
+    description: "The role of an AI agent"
+    enum: ["CEO", "CTO", "CMO", "CFO", "COO"]
+    example: "CEO"
+
+  ErrorCode:
+    type: "string"
+    description: "Error code for programmatic handling"
+    enum: ["INVALID_REQUEST", "SERVER_ERROR"]
+    example: "INVALID_REQUEST"
+
+  #-----------------------------------------------------------------------------
+  # Request/Response Objects
+  #-----------------------------------------------------------------------------
+  ChatRequest:
+    type: "object"
+    description: "Request to submit a new chat message"
+    required:
+      - "message"
+    properties:
+      message:
+        $ref: "#/definitions/Message"
+        description: |
+          The user's startup idea or query. 
+          Special commands:
+          - Include "@channel" to force all agents to respond
+          - Include "@[agent]" to direct the message to a specific agent
+      forceAllAgents:
+        type: "boolean"
+        description: "Alternative to @channel command - forces all agents to respond"
+        default: false
+    example:
+      message: "I'm planning a startup that leverages AI to streamline supply chain management."
+
+  AgentResponse:
+    type: "object"
+    description: "Response from an AI agent"
+    required:
+      - "agent"
+      - "message"
+    properties:
+      id:
+        type: "string"
+        description: "Unique identifier for the response"
+        example: "resp_123456"
+      agent:
+        $ref: "#/definitions/AgentRole"
+      message:
+        $ref: "#/definitions/Message"
+      timestamp:
+        $ref: "#/definitions/Timestamp"
+
+  ChatResponse:
+    type: "object"
+    description: "Response containing AI agent feedback"
+    required:
+      - "responses"
+    properties:
+      responses:
+        type: "array"
+        description: "Array of responses from the AI agents"
+        items:
+          $ref: "#/definitions/AgentResponse"
+      timestamp:
+        $ref: "#/definitions/Timestamp"
+
+  ErrorResponse:
+    type: "object"
+    description: "Standard error response"
+    required:
+      - "error"
+    properties:
+      error:
+        type: "string"
+        description: "Error message describing the issue"
+        example: "Missing required field: message"
+      code:
+        $ref: "#/definitions/ErrorCode"
+      timestamp:
+        $ref: "#/definitions/Timestamp"
