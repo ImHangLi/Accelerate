@@ -1,0 +1,133 @@
+.sidebar {
+  width: 240px;
+  background-color: #2f3136;
+  padding: 20px;
+  border-right: 1px solid #202225;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.agent-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 16px 0;
+  position: relative;
+  z-index: 1;
+  padding: 0 4px;
+}
+
+.agent-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 8px;
+  border: 1px solid transparent;
+  background-color: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+.agent-item:hover {
+  background-color: rgba(54, 57, 63, 0.5);
+  transform: translateX(2px);
+  box-shadow: none;
+}
+
+.agent-item.selected {
+  background-color: rgba(88, 101, 242, 0.1);
+  border-color: #5865f2;
+  box-shadow: none;
+}
+
+.agent-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 12px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease-in-out;
+}
+
+.agent-item:hover .agent-avatar {
+  transform: scale(1.05);
+}
+
+.agent-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.agent-name {
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 2px;
+  transition: color 0.2s ease-in-out;
+}
+
+.agent-role {
+  font-size: 0.75rem;
+  color: #72767d;
+  transition: color 0.2s ease-in-out;
+}
+
+.agent-item:hover .agent-name {
+  color: #fff;
+}
+
+.agent-item:hover .agent-role {
+  color: #b9bbbe;
+}
+
+.sidebar-footer {
+  padding-top: 16px;
+  margin-top: auto;
+  position: relative;
+  z-index: 2;
+  background-color: #2f3136;
+}
+
+.sidebar-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, 
+    rgba(32, 34, 37, 0) 0%,
+    rgba(32, 34, 37, 0.3) 50%,
+    rgba(32, 34, 37, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.channel-button {
+  width: 100%;
+  padding: 8px;
+  background-color: #5865f2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  opacity: 0.9;
+  position: relative;
+  z-index: 3;
+  box-shadow: none;
+}
+
+.channel-button:hover {
+  background-color: #4752c4;
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: none;
+} 
