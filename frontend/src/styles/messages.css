@@ -1,0 +1,76 @@
+.message {
+  display: flex;
+  gap: 16px;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease-in-out;
+  background-color: transparent;
+}
+
+.message:hover {
+  background-color: rgba(50, 53, 59, 0.5);
+}
+
+.message.loading {
+  opacity: 0.7;
+}
+
+.message-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  flex-shrink: 0;
+  transition: transform 0.2s ease-in-out;
+}
+
+.message:hover .message-avatar {
+  transform: scale(1.05);
+}
+
+.message-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.message-author {
+  font-weight: 500;
+  color: #fff;
+  transition: color 0.2s ease-in-out;
+}
+
+.message-timestamp {
+  font-size: 0.75rem;
+  color: #72767d;
+  white-space: nowrap;
+  transition: color 0.2s ease-in-out;
+}
+
+.message-text {
+  color: #dcddde;
+  line-height: 1.4;
+  word-wrap: break-word;
+  transition: color 0.2s ease-in-out;
+}
+
+.message:hover .message-author {
+  color: #fff;
+}
+
+.message:hover .message-timestamp {
+  color: #b9bbbe;
+}
+
+.message:hover .message-text {
+  color: #fff;
+} 

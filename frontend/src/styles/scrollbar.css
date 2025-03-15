@@ -1,0 +1,22 @@
+/* Custom scrollbar */
+.chat-messages::-webkit-scrollbar,
+.agent-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track,
+.agent-list::-webkit-scrollbar-track {
+  background: #2f3136;
+}
+
+.chat-messages::-webkit-scrollbar-thumb,
+.agent-list::-webkit-scrollbar-thumb {
+  background: #202225;
+  border-radius: 4px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover,
+.agent-list::-webkit-scrollbar-thumb:hover {
+  background: #2f3136;
+} 
