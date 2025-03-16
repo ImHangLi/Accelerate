@@ -1,0 +1,111 @@
+.message {
+  display: flex;
+  gap: 16px;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+  background-color: transparent;
+  margin: 4px 0;
+}
+
+.message.user-message {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.message:hover {
+  background-color: rgba(50, 53, 59, 0.5);
+}
+
+.message.loading {
+  opacity: 0.7;
+}
+
+.message-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  flex-shrink: 0;
+  transition: transform 0.2s ease-in-out;
+}
+
+.message:hover .message-avatar {
+  transform: scale(1.05);
+}
+
+.message-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-message .message-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.message-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.message-author {
+  font-weight: 500;
+  color: #fff;
+  transition: color 0.2s ease-in-out;
+}
+
+.message-timestamp {
+  font-size: 0.75rem;
+  color: #72767d;
+  white-space: nowrap;
+  transition: color 0.2s ease-in-out;
+}
+
+.message-text {
+  color: #dcddde;
+  line-height: 1.4;
+  word-wrap: break-word;
+  transition: color 0.2s ease-in-out;
+  max-width: 80%;
+}
+
+.user-message .message-text {
+  background-color: #5865f2;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 16px 16px 4px 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.message:not(.user-message) .message-text {
+  background-color: #40444b;
+  padding: 8px 12px;
+  border-radius: 16px 16px 16px 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.message:hover .message-author {
+  color: #fff;
+}
+
+.message:hover .message-timestamp {
+  color: #b9bbbe;
+}
+
+.message:hover:not(.user-message) .message-text {
+  color: #fff;
+}
+
+/* 调整加载中消息的样式 */
+.message.loading .message-text {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0;
+} 

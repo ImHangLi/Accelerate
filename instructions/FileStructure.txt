@@ -1,0 +1,31 @@
+AccelerateChat/
+├── AccelerateChat_PRD.md          # Product Requirements Document
+├── TECHSTACK.md                   # Tech Stack Overview
+├── FILE_STRUCTURE.txt             # This file: Project File Structure
+├── GUIDE_FRONTEND.md              # Frontend Development Guide
+├── GUIDE_BACKEND.md               # Backend Development Guide
+├── .cursorrules                   # Code Style & Project Workflow Guidelines
+├── frontend/
+│   ├── index.html                 # Main HTML file for the frontend
+│   ├── src/
+│   │   ├── App.jsx                # Root React component
+│   │   ├── components/
+│   │   │   ├── ChatWindow.jsx     # Displays the chat conversation
+│   │   │   ├── Message.jsx        # Renders individual messages
+│   │   │   └── CommandButton.jsx  # Button to trigger the @channel command
+│   │   ├── context/
+│   │   │   └── ChatContext.jsx    # React Context for managing chat state
+│   │   ├── styles/
+│   │   │   └── App.css            # CSS styles (neumorphism design)
+│   │   └── main.jsx               # React entry point
+│   └── vite.config.js             # Vite configuration file
+└── backend/
+    ├── server.js                  # Main backend server entry point
+    ├── routes/
+    │   └── chat.js                # API route definitions for chat functions
+    ├── controllers/
+    │   └── chatController.js      # Controller for handling chat processing logic
+    ├── services/
+    │   └── aiService.js           # Service module for AI API integration
+    └── utils/
+        └── promptEngine.js        # Utility for prompt building and agent logic
