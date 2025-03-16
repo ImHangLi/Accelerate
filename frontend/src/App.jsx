@@ -11,9 +11,9 @@ import AgentList from "./components/AgentList"
 import AgentDescription from "./components/AgentDescription"
 import ChatMessages from "./components/ChatMessages"
 import ChatInput from "./components/ChatInput"
-import { API_CONFIG } from "./config"
+import { API_CONFIG, ApiHelpers } from "./config"
 
-axios.defaults.baseURL = import.meta.env.VITE_API_URL
+axios.defaults.baseURL = API_CONFIG.API_URL
 
 const AI_AGENTS = [
   {
@@ -118,91 +118,92 @@ function App() {
               token: API_CONFIG.ASTRA_API.TOKEN.substring(0, 10) + "...", // Log partial token for debugging
             })
 
-            // Log the complete request details for debugging
-            const requestDetails = {
-              url: "https://api.langflow.astra.datastax.com/lf/1c2cba2a-255d-4ac8-b373-78187786ba0e/api/v1/run/885f5707-f7d5-47cf-9558-dc2cbb26accb?stream=false",
+            // Get the API URL from helpers
+            const apiUrl = ApiHelpers.getAstraApiUrl()
+
+            // Log the request details for debugging
+            console.log("API Request:", {
+              url: apiUrl,
               method: "POST",
-              headers: {
-                Authorization: `Bearer ${API_CONFIG.ASTRA_API.TOKEN.substring(
-                  0,
-                  10
-                )}...`,
-                "Content-Type": "application/json",
-              },
-              body: {
-                input_value: inputValue,
-                output_type: "chat",
-                input_type: "chat",
-                tweaks: {
-                  "Agent-UptKh": {},
-                  "ChatInput-dciUl": {},
-                  "ChatOutput-7xdjV": {},
-                  "JSONCleaner-fSxD4": {},
-                },
-              },
-            }
-            console.log("Full request details:", requestDetails)
+              body: ApiHelpers.prepareAstraRequestBody(inputValue),
+            })
 
-            // Complete replacement of the fetch implementation to match test-api.js exactly
-            const fetchResponse = await fetch(
-              "https://api.langflow.astra.datastax.com/lf/1c2cba2a-255d-4ac8-b373-78187786ba0e/api/v1/run/885f5707-f7d5-47cf-9558-dc2cbb26accb?stream=false",
-              {
-                method: "POST",
-                headers: {
-                  Authorization: `Bearer ${API_CONFIG.ASTRA_API.TOKEN}`,
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  input_value: inputValue,
-                  output_type: "chat",
-                  input_type: "chat",
-                  tweaks: {
-                    "Agent-UptKh": {},
-                    "ChatInput-dciUl": {},
-                    "ChatOutput-7xdjV": {},
-                    "JSONCleaner-fSxD4": {},
-                  },
-                }),
-              }
-            )
+            // Make the API request
+            const fetchResponse = await fetch(apiUrl, {
+              method: "POST",
+              headers: ApiHelpers.getAstraHeaders(),
+              body: JSON.stringify(
+                ApiHelpers.prepareAstraRequestBody(inputValue)
+              ),
+            })
 
-            // Get the response JSON
-            const data = await fetchResponse.json()
-            console.log("Full API Response:", JSON.stringify(data, null, 2))
-
-            // Extract and parse the message text exactly as in test-api.js
-            const messageText = data.outputs[0].outputs[0].results.message.text
-            console.log("Raw Message Text:", messageText)
-
+            // Standard fetch response handling
             try {
-              // Parse the message JSON
-              const parsedMessage = JSON.parse(messageText)
-              console.log("Parsed CEO Response:", parsedMessage.response)
+              const data = await fetchResponse.json()
+              console.log("Full API Response:", JSON.stringify(data, null, 2))
 
-              // Add a delay
-              await new Promise(resolve => setTimeout(resolve, 1000))
+              // Extract and parse the message text
+              const messageText =
+                data.outputs[0].outputs[0].results.message.text
+              console.log("Raw Message Text:", messageText)
 
-              // Add the response to messages
-              const ceoResponseObj = {
+              try {
+                // Parse the message JSON
+                const parsedMessage = JSON.parse(messageText)
+                console.log("Parsed CEO Response:", parsedMessage.response)
+
+                // Add a delay
+                await new Promise(resolve => setTimeout(resolve, 1000))
+
+                // Add the response to messages
+                const ceoResponseObj = {
+                  id: Date.now(),
+                  text: parsedMessage.response,
+                  sender: "CEO",
+                  timestamp: new Date().toISOString(),
+                }
+
+                setMessages(prev => [...prev, ceoResponseObj])
+              } catch (jsonError) {
+                console.error("Error parsing JSON:", jsonError)
+
+                // Use raw message if parsing fails
+                const ceoResponseObj = {
+                  id: Date.now(),
+                  text:
+                    messageText ||
+                    "Sorry, I received a response but couldn't parse it properly.",
+                  sender: "CEO",
+                  timestamp: new Date().toISOString(),
+                }
+
+                setMessages(prev => [...prev, ceoResponseObj])
+              }
+            } catch (responseError) {
+              console.error("Error handling response:", responseError)
+
+              // Create a more specific error message based on the status code
+              let errorMessage =
+                "Sorry, there was an error processing your request."
+
+              if (fetchResponse.status === 401) {
+                errorMessage =
+                  "Authentication failed. Please check your API token."
+              } else if (fetchResponse.status === 403) {
+                errorMessage =
+                  "You don't have permission to access this resource."
+              } else if (fetchResponse.status === 429) {
+                errorMessage = "Too many requests. Please try again later."
+              }
+
+              const errorResponse = {
                 id: Date.now(),
-                text: parsedMessage.response,
-                sender: "CEO",
+                text: errorMessage,
+                sender: "system",
                 timestamp: new Date().toISOString(),
               }
 
-              setMessages(prev => [...prev, ceoResponseObj])
-            } catch (jsonError) {
-              console.error("Error parsing JSON:", jsonError)
-
-              // Use raw message if parsing fails
-              const ceoResponseObj = {
-                id: Date.now(),
-                text: messageText,
-                sender: "CEO",
-                timestamp: new Date().toISOString(),
-              }
-
-              setMessages(prev => [...prev, ceoResponseObj])
+              setMessages(prev => [...prev, errorResponse])
             }
           } catch (apiError) {
             console.error("API Error:", apiError)
